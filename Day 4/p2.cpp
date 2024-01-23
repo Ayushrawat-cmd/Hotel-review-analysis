@@ -2,14 +2,12 @@
 using namespace std;
 vector<string>ans;
 unordered_map<string, vector<string>>mp;
-void solve(string &s, int i, string tmp){
+void solve(string &s, int i, string tmp){ // using backtracking to find all the possible outcomes
     int n =s.length();
-        // cout<<i<<endl;
     if(i == n){
         ans.push_back(tmp);
         return ;
     }
-    // string val = to_string(s[i]-'0');
     string tmp1;
     for(int idx=i; idx<n; idx++){
         tmp1+=s[idx];
@@ -20,13 +18,6 @@ void solve(string &s, int i, string tmp){
             }
         }
     }
-    // if(i+1<n && s[i] == '1' && s[i+1] == '2'){
-    //     solve(s, i+2, tmp + mp["12"][0] );
-    // }
-    // // cout<<mp[s[i]];
-    // for(string ch: mp[val]){
-    //     solve(s, i+1, tmp+ch );
-    // }
 }
 int main(){
     mp["1"] = {"Z", "Y", "A"};

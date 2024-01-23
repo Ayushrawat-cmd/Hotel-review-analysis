@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-bool find_value(vector<vector<int>>&mat, int target_val){
+bool find_value(vector<vector<int>>&mat, int target_val){ // find the target value in O(log(n+m)) using binary search
     int m = mat[0].size(), n = mat.size();
     int idx=-1 ;
     for(int i=0, j = n-1; i<=j; ){

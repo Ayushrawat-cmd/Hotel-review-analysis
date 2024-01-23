@@ -2,10 +2,10 @@
 using namespace std;
 int row[4] = {0,-1, 0, 1};
 int col[4] = {1,0,-1,0};
-bool valid(int x, int y, int n , int m){
+bool valid(int x, int y, int n , int m){ // if the index is valid or not
     return x>=0 && y>=0 && x<n && y<m;
 }
-int number_of_islands(vector<vector<int>>&island){
+int number_of_islands(vector<vector<int>>&island){ // using BFS to find all the possible islands
     int n =island.size(), m =island[0].size();
     queue<pair<int,int>>q;
     int ans = 0;

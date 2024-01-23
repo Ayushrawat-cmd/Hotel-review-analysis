@@ -2,7 +2,7 @@
 using namespace std;
 vector<int> clockWise;
 vector<int> antiClockWise;
-void clockWiseDirection(vector<vector<int>> &mat, int n, int m, int i, int j, vector<vector<int>> &vis)
+void clockWiseDirection(vector<vector<int>> &mat, int n, int m, int i, int j, vector<vector<int>> &vis) // for performing clockwise direction of a matrix
 {
     clockWise.push_back(mat[i][j]);
     vis[i][j] = 1;
@@ -16,7 +16,7 @@ void clockWiseDirection(vector<vector<int>> &mat, int n, int m, int i, int j, ve
     else if (i - 1 >= 0 && !vis[i - 1][j])
         clockWiseDirection(mat, n, m, i - 1, j, vis);
 }
-void antiClockWiseDirection(vector<vector<int>> &mat, int n, int m, int i, int j, vector<vector<int>> &vis)
+void antiClockWiseDirection(vector<vector<int>> &mat, int n, int m, int i, int j, vector<vector<int>> &vis) // for performing in anticlockwise direction of a matrix
 {
     antiClockWise.push_back(mat[i][j]);
     vis[i][j] = 1;
