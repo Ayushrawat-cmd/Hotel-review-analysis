@@ -113,10 +113,18 @@ class ParkingSpot{
             this->place = place;
             occupied = 0;
         }
-        virtual void spotOccupy() = 0;
-        virtual void spotUnoccupy() = 0;
-        virtual bool  isOccupied() = 0;
-        virtual int getSpot() = 0;
+        void spotOccupy(){
+            occupied = 1;
+        }
+        void spotUnoccupy(){
+            occupied = 0;
+        }
+        bool isOccupied(){
+            return occupied;
+        }
+        int getSpot(){
+            return place;
+        }
 };
 
 /*
@@ -252,6 +260,10 @@ Parking floor has many parking spots
 */
 class ParkingFloor{ 
     vector<ParkingSpot> parkingSpots; 
+    vector<Compact>compactSpots;
+    vector<Compact>compactStops;
+    vector<Compact>compactStops;
+    vector<Compact>compactStops;
     int parking_spots;
     vector<vector<int>>userPaidID; // user paid through exit panels
     int num_of_entrypoints, num_of_exitpoints;
@@ -301,6 +313,7 @@ class Price{
         vector<int>fees(){
             return {first_hour_fee ,second_Third_hour_fee, remaining_hour_fee};
         }
+
         int charge(int checkin, int checkout){
             int hours = checkout -checkin;
             if(hours>3){
@@ -323,19 +336,19 @@ class System{
     Price fee;
     public:
         System() = default;
-        System(int max_parking_floor, int max_parking_attendant){
+        System(int max_parking_floor, int max_parking_attendant){ // Maximum floor and maximum parking attendant should be there in system
             this->max_parking_floor = max_parking_floor;
             this->max_parking_attendant = max_parking_attendant;
             parkingFloors.reserve(max_parking_floor);
             parkingAttendants.reserve(max_parking_attendant);
         }
-        int addParkingFloor(ParkingFloor & parkingFloor){
+        int addParkingFloor(ParkingFloor & parkingFloor){ // Add floor in the system
             if(parkingFloors.size() == max_parking_floor)
                 return false;
             parkingFloors.push_back(parkingFloor);
             return parkingFloors.size();
         }
-        int removeParkingFloor(int floor){
+        int removeParkingFloor(int floor){ // Remove floor from the system
             for(int i =0; i<parkingFloors.size(); i++){
                 if(floor == parkingFloors[i].getFloor()){
                     swap(parkingFloors[i], parkingFloors[parkingFloors.size()-1]);
@@ -345,19 +358,19 @@ class System{
             parkingFloors.pop_back();
             return parkingFloors.size();
         }
-        int removeSpotFromFloor(int floor, int spot_location){
+        int removeSpotFromFloor(int floor, int spot_location){ // remove spot from the floor at dedicate floor of fixed location
             return parkingFloors[floor].removeParkingSpot(spot_location);
         }
-        int addSpotInFloor(int floor, int spot_location){
+        int addSpotInFloor(int floor, int spot_location){ // add spot in the floor at dedicate location
             
             return parkingFloors[floor].addParkingSpots(spot_location);
         }   
-        int addParkingAttendant(ParkingAttendant &parkingAttendant){
+        int addParkingAttendant(ParkingAttendant &parkingAttendant){ // add parking attendant in the system
             max_parking_attendant+=1;
             parkingAttendants.push_back(parkingAttendant);
             return max_parking_attendant;
         }
-        int removeParkingAttendant(int attendantID){
+        int removeParkingAttendant(int attendantID){ // remove attendant from the system
             int idx = 0;
             for(ParkingAttendant parkingAttendant: parkingAttendants  ){
                 
@@ -366,12 +379,12 @@ class System{
                 }
                 idx++;
             }
-            swap(parkingAttendants[idx], parkingAttendants[max_parking_attendant-1]);
+            swap(parkingAttendants[idx], parkingAttendants[max_parking_attendant-1]); // swap with the last one and pop it from vector
             parkingAttendants.pop_back();
             max_parking_attendant-=1;
             return max_parking_attendant;
         }
-        bool parkingSpotAvailable(Vehicle &vehicle){
+        bool parkingSpotAvailable(Vehicle &vehicle){ // check if the spot is availaible or not
             bool available = 0;
             for(ParkingFloor floor: parkingFloors){
                 for(ParkingSpot spots: floor.getParkingSpots()){
@@ -386,8 +399,9 @@ class System{
             }
             return false;
         }
-        bool addCustomer(Customer &customer){
-            if(this->parkingSpotAvailable()){
+        bool addCustomer(Customer &customer){ // add customer in the system
+            Vehicle vehicle =customer.getVehicle();
+            if(this->parkingSpotAvailable(vehicle)){
                 customers.push_back(customer);
                 for(int i=0; i<max_parking_floor; i++){
                     vector<ParkingSpot>parkingSpots = parkingFloors[i].getParkingSpots();
@@ -403,7 +417,7 @@ class System{
             }   
             return false;
         }
-        bool removeCustomer(Customer &c, ParkingSpot & parkingSpot, ParkingFloor & parkingFloor){
+        bool removeCustomer(Customer &c, ParkingSpot & parkingSpot, ParkingFloor & parkingFloor){ // basically it will not remove customer of the system it just add the checkout time in the system for respective customer
             int idx= 0;
             for(auto customer: customers){
                 if(customer.get_userID() == c.get_userID()){
@@ -413,13 +427,13 @@ class System{
             }
             if(idx == customers.size())
                 return false;
-            customers[idx].checkoutTime(10);
-            parkingFloors[parkingFloor.getFloor()].addParkingSpots(parkingSpot.getSpot());
+            customers[idx].checkoutTime(10); // right now the checkout time is static
+            parkingFloors[parkingFloor.getFloor()].addParkingSpots(parkingSpot.getSpot()); // unoccupy the spot
         }
-        int chargePay(Customer &customer){
+        int chargePay(Customer &customer){ // charge paid by the customer
             return fee.charge(customer.getCheckinTime(), customer.getCheckoutTime());
         }
-        int addPayment(Customer &c, string feesPaidTo,ParkingAttendant & parkingattendant){
+        int addPayment(Customer &c, string feesPaidTo,ParkingAttendant & parkingattendant){ // add payment in system
             int idx =0 ;
             for(auto parkingAttendant: parkingAttendants){
                 if(parkingAttendant.get_userID() == parkingattendant.get_userID())
@@ -431,22 +445,30 @@ class System{
             }
         }
 };
-class Admin: public User, public System{
+
+/*
+Admin class which is the user and have the system
+*/
+class Admin: public User{
     int parking_rate;
     
     public:
+        System*system;
+        Price *price; // admin has Price object which helps him to modify the charge
         Admin(int parking_rate){
             this->parking_rate = parking_rate;
         }
-        int addParkingRate(int rate){
+        int addParkingRate(int rate){ // add parking rate 
             this->parking_rate+=rate;
         }
-        int modifyParkingRate(int parkingRate){
+        int modifyParkingRate(int parkingRate){ // modify the rate
             this->parking_rate =parking_rate;
         }
 };
 
-
+/*
+Customer is the user which have vehicle and allocated floor and the spot
+*/
 class Customer: public User{
     Vehicle vehicle;
     string payment_type;
@@ -463,6 +485,9 @@ class Customer: public User{
             this->vehicle = vehicle;
             this->payment_type = payment_type;
         }
+        Vehicle getVehicle(){
+            return vehicle;
+        }
         int  checkoutTime(int time){
             checkout = time;
             return checkout;
@@ -477,7 +502,7 @@ class Customer: public User{
         int getCheckinTime(){
             return checkin;
         }
-        void payment(string paidTo, int fees){
+        void payment(string paidTo, int fees){ // this is for payment done to parking attendant right now
             this->paidTo = paidTo;
             this->paid_fee = fees;
             parkingAttendant.user_paid(this->get_userID());
@@ -491,10 +516,10 @@ class Customer: public User{
 
 };
 class ParkingAttendant: public User{
-    vector<int>paid_userID;
+    vector<int>paid_userID; // all the ids of the user who paid to this parking attendant
     public:
         ParkingAttendant() = default;
-        void user_paid(int userID){
+        void user_paid(int userID){ 
             paid_userID.push_back(userID);
         }
 };
