@@ -1,4 +1,5 @@
 class Book:
+    '''Book class having all the required properties like author name , genre, title etx.'''
     __id = int
     __title = str
     __author = None

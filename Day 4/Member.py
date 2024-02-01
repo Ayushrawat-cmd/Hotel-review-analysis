@@ -1,6 +1,7 @@
 from User import User
 from Book import Book
 class Member(User):
+    '''Member is the user which having the reserve the books, issued books and the date of issued books'''
     __reserve_books = None
     __issued_books = None
     __issued_books_date = None
