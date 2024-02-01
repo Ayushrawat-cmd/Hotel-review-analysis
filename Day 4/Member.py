@@ -5,12 +5,14 @@ class Member(User):
     __issued_books = None
     __issued_books_date = None
     __max_checkout_books = int
+    recieved_message = None
     def __init__(self, name,address, id  ):
         super().__init__(name, address, id)
         self.__issued_books = [Book]
         self.__reserve_books = [Book]
         self.__issued_books_date = []
         self.__max_checkout_books = 5
+        self.recieved_message = []
 
     def checkOutBook(self, book : Book, date) -> bool:
         '''Checkout functionality for the user by adding certain validation in it'''
@@ -36,8 +38,12 @@ class Member(User):
                 self.__issued_books_date.pop(issued_book)
                 return True
         return False
-     
-    
+
+    def getReserveBooks(self):
+        return self.__reserve_books
+
+    def displayeMessages(self):
+        print(self.recieved_message)
 
         
     

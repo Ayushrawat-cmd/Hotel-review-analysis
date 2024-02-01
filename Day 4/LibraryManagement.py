@@ -118,5 +118,18 @@ class LibraryManagement:
         for book in self.all_books:
             print(Book.getDetails(book))
 
+    def notifyBookAvailaible(self, reserveBook:Book, message ):
+        '''Notify all the users who reserve the book when the book is availaible in the system'''
+        for book in range(len(self.all_books)):
+            if self.all_books[book].getId() == reserveBook.getId() and self.all_books[book].getNumberOfCopies() == 0:
+                return False
+        for member in self.members:
+            for book in member.getReserveBooks():
+                if reserveBook.getId() == book.getId() and self.all_books:
+                    member.recieved_message.append(message)
+    
+    
+    
+
     
                 
