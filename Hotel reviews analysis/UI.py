@@ -1,6 +1,7 @@
 from scrap_hotel_reviews import Scrapper
 import streamlit as st
 import pickle as pkl
+import pandas as pd
 import re
 
 class UI:
@@ -16,8 +17,40 @@ class UI:
 
         model = pkl.load(open('nlp_model/logistics_regression_model.pkl','rb'))
         prediction = model.predict(reviews)
-        st.write(f"The hotel {hotel_name} is {prediction}")
+        prediciton_result = self.get_prediction_result(prediction)
+        st.write(f"The hotel {hotel_name} is {prediciton_result}")
+        self.show_graph(prediction)
         return f"{hotel_name}, {reviews}"
+    
+    def show_graph(self, prediction):
+        '''Show the graph of the prediction'''
+        prediction_dict = {}
+        prediction_dict['prediction'] = prediction
+        prediction_df = pd.DataFrame(prediction_dict)
+        neg_count = prediction_df[prediction_df["prediction"] == 0].count().values[0]
+        pos_count = prediction_df[prediction_df["prediction"] == 1].count().values[0]
+
+        graph_dict = {}
+        graph_dict['neg_count'] = neg_count
+        graph_dict['pos_count'] = pos_count
+        graph_df = pd.DataFrame(graph_dict,index=[0])
+        st.write("Prediction Graph:-")
+        st.bar_chart(graph_df)
+
+    def get_prediction_result(self, prediction):
+        '''Convert the prediction into the human readable form'''
+        prediction_dict = {}
+        prediction_dict['prediction'] = prediction
+        prediction_df = pd.DataFrame(prediction_dict)
+        neg_count = prediction_df[prediction_df["prediction"] == 0].count().values[0]
+        pos_count = prediction_df[prediction_df["prediction"] == 1].count().values[0]
+        print(f'neg count: {neg_count} pos count: {pos_count}')
+        if pos_count > neg_count:
+            return "Good"
+        elif pos_count < neg_count:
+            return "Bad"
+        else:
+            return "Neutral"
 
     def input_details(self, hotel_names):
         '''Enter the details like the hotel name and the number of reviews onto which the user want to analyse'''
