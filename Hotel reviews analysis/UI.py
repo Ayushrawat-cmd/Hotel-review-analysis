@@ -1,16 +1,22 @@
 from scrap_hotel_reviews import Scrapper
 import streamlit as st
+import pickle as pkl
 import re
 
 class UI:
 
     def __init__(self) -> None:
         st.title("Hotel Review Analysis")
-    
+        self.all_review = []
+
     def predict(self, hotel_name, reviews = []):
         '''Predict that wehter the hotel is good or bad'''
         if len(reviews) == 0:
-            reviews = self.fetchReviews(hotel_name)
+            reviews = self.fetchReviews(hotel_name, self.num_of_reviews)
+
+        model = pkl.load(open('nlp_model/logistics_regression_model.pkl','rb'))
+        prediction = model.predict(reviews)
+        st.write(f"The hotel {hotel_name} is {prediction}")
         return f"{hotel_name}, {reviews}"
 
     def input_details(self, hotel_names):
@@ -27,6 +33,8 @@ class UI:
         if self.fetchReviews_button :
             self.displayReview(self.hotel_name, self.num_of_reviews)
         # return self.hotel_name, self.num_of_reviews
+        if self.predict_button:
+            self.predict(self.hotel_name,self.all_review)
     
     def fetchReviews(self, hotel_name, num_of_reviews):
         '''Fetching the review from the google review website using scrapper'''
@@ -37,11 +45,11 @@ class UI:
     def displayReview(self, hotel_name, num_of_reviews):
         '''Display the reviews on the website'''
         st.write("Display reviews:-")
-        all_review = self.fetchReviews(hotel_name, num_of_reviews )
-        if len(all_review) == 0:
+        self.all_review = self.fetchReviews(hotel_name, num_of_reviews )
+        if len(self.all_review) == 0:
             st.write("Sorry no reviews found")
         else:
-            for review in all_review:
+            for review in self.all_review:
                 remove_read_more =str(review)
                 matched = re.search(r'(\.|!)[^\.]*Read more$', remove_read_more)
                 if matched:
