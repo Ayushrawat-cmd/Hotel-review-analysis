@@ -3,6 +3,7 @@ import streamlit as st
 import pickle as pkl
 import pandas as pd
 import re
+import matplotlib.pyplot as plt
 
 class UI:
 
@@ -19,7 +20,10 @@ class UI:
         prediction = model.predict(reviews)
         prediciton_result = self.get_prediction_result(prediction)
         st.write(f"The hotel {hotel_name} is {prediciton_result}")
-        self.show_graph(prediction)
+        try:
+            self.show_graph(prediction)
+        except Exception as error:
+            print(error)
         return f"{hotel_name}, {reviews}"
     
     def show_graph(self, prediction):
@@ -29,28 +33,28 @@ class UI:
         prediction_df = pd.DataFrame(prediction_dict)
         neg_count = prediction_df[prediction_df["prediction"] == 0].count().values[0]
         pos_count = prediction_df[prediction_df["prediction"] == 1].count().values[0]
-
-        graph_dict = {}
-        graph_dict['neg_count'] = neg_count
-        graph_dict['pos_count'] = pos_count
-        graph_df = pd.DataFrame(graph_dict,index=[0])
-        st.write("Prediction Graph:-")
-        st.bar_chart(graph_df)
+        fig, ax = plt.subplots()
+    
+        ax.pie([neg_count, pos_count], labels=["Bad reviews", "Good reviews"],autopct='%1.0f%%' )
+        st.write(f"Prediction Graph:- ")
+        st.pyplot(fig)
 
     def get_prediction_result(self, prediction):
         '''Convert the prediction into the human readable form'''
-        prediction_dict = {}
-        prediction_dict['prediction'] = prediction
-        prediction_df = pd.DataFrame(prediction_dict)
-        neg_count = prediction_df[prediction_df["prediction"] == 0].count().values[0]
-        pos_count = prediction_df[prediction_df["prediction"] == 1].count().values[0]
+        pos_count = 0
+        neg_count = 0
+        for i in prediction:
+            if i == 1:
+                pos_count+=1
+            else:
+                neg_count+=1
         print(f'neg count: {neg_count} pos count: {pos_count}')
         if pos_count > neg_count:
-            return "Good"
+            return "good"
         elif pos_count < neg_count:
-            return "Bad"
+            return "bad"
         else:
-            return "Neutral"
+            return "neutral"
 
     def input_details(self, hotel_names):
         '''Enter the details like the hotel name and the number of reviews onto which the user want to analyse'''
@@ -90,14 +94,3 @@ class UI:
                     print(remove_read_more)
                 st.markdown(f">{remove_read_more}")
 
-
-
-    # def (self, hotel_name, reviews:list):
-    #     if st.button(label="Predict Price"):
-    #         if len(reviews) == 0:
-    #             st.write("Sorry! No reviews found for this hotel")
-    #         else:
-    #             st.success(self.predict(hotel_name, reviews))
-    
-    # def display_details(self):
-        

@@ -1,3 +1,4 @@
+import math
 from selenium import webdriver
 from hotel_review_preprocessor import Preprocessor
 from selenium.webdriver import Keys
@@ -14,10 +15,10 @@ class Scrapper:
         options.add_argument("--headless")
         options.add_argument('window-size=1200x600')
         self.review_dict = {}
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(options= options)
         
 
-    def handle_infinite_reload(self,max_scroll_times =10):
+    def handle_infinite_reload(self,max_scroll_times =11):
         '''Infinite reload handler in the google review page'''
 
         last_height = self.driver.execute_script("return document.body.scrollHeight") 
@@ -63,7 +64,7 @@ class Scrapper:
                 print(error)
             finally:
                 try:
-                    self.handle_infinite_reload()
+                    self.handle_infinite_reload(max_scroll_times=math.ceil(num_of_reviews/9))
                     sleep(2)
                     reviews = self.driver.find_elements(by="xpath", value='//div[@class="K7oBsc"]/div/span')
                     sleep(5)
