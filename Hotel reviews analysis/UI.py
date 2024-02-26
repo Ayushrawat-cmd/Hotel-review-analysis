@@ -19,7 +19,7 @@ class UI:
         model = pkl.load(open('nlp_model/logistics_regression_model.pkl','rb'))
         prediction = model.predict(reviews)
         prediciton_result = self.get_prediction_result(prediction)
-        st.write(f"The hotel {hotel_name} is {prediciton_result}")
+        st.header(f"The hotel {hotel_name} is :red[{prediciton_result}] Hotel")
         try:
             self.show_graph(prediction)
         except Exception as error:
@@ -50,9 +50,9 @@ class UI:
                 neg_count+=1
         print(f'neg count: {neg_count} pos count: {pos_count}')
         if pos_count > neg_count:
-            return "good"
+            return "GOOD"
         elif pos_count < neg_count:
-            return "bad"
+            return "BAD"
         else:
             return "neutral"
 
