@@ -9,11 +9,13 @@ class UI:
 
     def __init__(self) -> None:
         st.title("Hotel Review Analysis")
-        self.all_review = []
-        self.predict_button_disable = True
+        st.session_state.all_review = []
+        # self.predict_button_disable = True
+        st.session_state.disabled = True
 
     def predict(self, hotel_name, reviews = []):
         '''Predict that wehter the hotel is good or bad'''
+        print(st.session_state.all_review)
         if len(reviews) == 0:
             reviews = self.fetchReviews(hotel_name, self.num_of_reviews)
 
@@ -65,14 +67,17 @@ class UI:
         col1, col2 = st.columns(2)
         with col1:
             self.fetchReviews_button = st.button("Fetch reviews")
-        with col2:
-            self.predict_button= st.button("Predict", disabled=self.predict_button_disable)
 
         if self.fetchReviews_button :
-            self.displayReview(self.hotel_name, self.num_of_reviews)
+            self.fetchReviews(self.hotel_name, self.num_of_reviews)
+            st.session_state.disabled = False
+
+        with col2:
+            self.predict_button= st.button("Predict", disabled=st.session_state.disabled)
+
         # return self.hotel_name, self.num_of_reviews
         if self.predict_button:
-            self.predict(self.hotel_name,self.all_review)
+            self.predict(self.hotel_name,st.session_state.all_review)
     
     def fetchReviews(self, hotel_name, num_of_reviews):
         '''Fetching the review from the google review website using scrapper'''
@@ -93,7 +98,7 @@ class UI:
                 if matched:
                     remove_read_more = remove_read_more[0:matched.span()[0]]
                     print(remove_read_more)
-                self.all_review.append(remove_read_more)
+                st.session_state.all_review.append(remove_read_more)
                 st.markdown(f">{remove_read_more}")
         
         self.predict_button_disable = False

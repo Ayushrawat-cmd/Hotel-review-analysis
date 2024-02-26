@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from time import sleep
 import re
+import streamlit
 
 class Scrapper:
         
@@ -43,7 +44,7 @@ class Scrapper:
             print(curr_scroll_times)
             curr_scroll_times+=1
 
-    def scrap_data(self, hotel_name, num_of_reviews=100):   
+    def scrap_data(self,st:streamlit, hotel_name, num_of_reviews=100):   
         '''Scrapping the data from the google reviews'''
         self.driver.get("https://www.google.com/webhp?hl=en&sa=X&ved=0ahUKEwi7n_msosGEAxWZ8zgGHcVJC5QQPAgJ")
         sleep(2)
