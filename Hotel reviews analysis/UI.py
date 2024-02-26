@@ -10,6 +10,7 @@ class UI:
     def __init__(self) -> None:
         st.title("Hotel Review Analysis")
         self.all_review = []
+        self.predict_button_disable = True
 
     def predict(self, hotel_name, reviews = []):
         '''Predict that wehter the hotel is good or bad'''
@@ -65,7 +66,7 @@ class UI:
         with col1:
             self.fetchReviews_button = st.button("Fetch reviews")
         with col2:
-            self.predict_button= st.button("Predict")
+            self.predict_button= st.button("Predict", disabled=self.predict_button_disable)
 
         if self.fetchReviews_button :
             self.displayReview(self.hotel_name, self.num_of_reviews)
@@ -82,15 +83,18 @@ class UI:
     def displayReview(self, hotel_name, num_of_reviews):
         '''Display the reviews on the website'''
         st.write("Display reviews:-")
-        self.all_review = self.fetchReviews(hotel_name, num_of_reviews )
-        if len(self.all_review) == 0:
+        all_reviews = self.fetchReviews(hotel_name, num_of_reviews )
+        if len(all_reviews) == 0:
             st.write("Sorry no reviews found")
         else:
-            for review in self.all_review:
+            for review in all_reviews:
                 remove_read_more =str(review)
                 matched = re.search(r'(\.|!)[^\.]*Read more$', remove_read_more)
                 if matched:
                     remove_read_more = remove_read_more[0:matched.span()[0]]
                     print(remove_read_more)
+                self.all_review.append(remove_read_more)
                 st.markdown(f">{remove_read_more}")
+        
+        self.predict_button_disable = False
 

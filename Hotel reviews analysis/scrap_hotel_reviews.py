@@ -15,7 +15,7 @@ class Scrapper:
         options.add_argument("--headless")
         options.add_argument('window-size=1200x600')
         self.review_dict = {}
-        self.driver = webdriver.Chrome(options= options)
+        self.driver = webdriver.Chrome()
         
 
     def handle_infinite_reload(self,max_scroll_times =11):
