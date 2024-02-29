@@ -7,6 +7,7 @@ import numpy as np
 from time import sleep
 import re
 import streamlit
+from display_reviews import DisplayReview
 
 class Scrapper:
         
@@ -16,7 +17,7 @@ class Scrapper:
         options.add_argument("--headless")
         options.add_argument('window-size=1200x600')
         self.review_dict = {}
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(options=options)
         
 
     def handle_infinite_reload(self,max_scroll_times =11):
@@ -44,7 +45,7 @@ class Scrapper:
             print(curr_scroll_times)
             curr_scroll_times+=1
 
-    def scrap_data(self,st:streamlit, hotel_name, num_of_reviews=100):   
+    def scrap_data(self, hotel_name, num_of_reviews=100, st=streamlit):   
         '''Scrapping the data from the google reviews'''
         self.driver.get("https://www.google.com/webhp?hl=en&sa=X&ved=0ahUKEwi7n_msosGEAxWZ8zgGHcVJC5QQPAgJ")
         sleep(2)
@@ -71,10 +72,19 @@ class Scrapper:
                     sleep(5)
                     # print(reviews)
                     all_reviews = []
+                    display_obj = DisplayReview(st)
+                    count = 0
                     for review in reviews[0:min(len(reviews), num_of_reviews+20)]:
 
                         # removing the read more line from the review
                         print(review.text)
+                        
+                        # display review on frontend
+                        if len(review.text) != 0:
+                            if count < num_of_reviews:
+                                display_obj.displayReview(review.text)
+                                count += 1
+
                         remove_read_more_text = review.text
                         # sleep(1)
                         
